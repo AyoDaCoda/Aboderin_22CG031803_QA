@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Simple Q&A — NLP</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="container">
+    <h1 class="title">Ask Anything — Q&A (NLP)</h1>
+
+    <form id="qa-form" class="card" autocomplete="off" onsubmit="return false;">
+      <label for="question" class="label">Your question</label>
+      <textarea id="question" name="question" rows="4" placeholder="Type a question for the assistant..." required></textarea>
+
+      <div class="controls">
+        <button id="ask-btn" type="submit">Ask</button>
+        <button id="clear-btn" type="button" class="secondary">Clear</button>
+      </div>
+
+      <div id="status" aria-live="polite" class="status"></div>
+    </form>
+
+    <section id="answer-card" class="answer-card hidden" aria-live="polite">
+      <h2 class="answer-title">Answer</h2>
+      <pre id="answer" class="answer-text"></pre>
+      <div class="meta" id="meta"></div>
+    </section>
+
+    <footer class="footer">
+      <small>Made with a tiny Flask backend + Groq LLM. Don't paste secrets here.</small>
+    </footer>
+  </main>
+
+  <script>
+    // Frontend JS: send question to /ask and display results
+    (function () {
+      const form = document.getElementById('qa-form');
+      const askBtn = document.getElementById('ask-btn');
+      const clearBtn = document.getElementById('clear-btn');
+      const questionInput = document.getElementById('question');
+      const status = document.getElementById('status');
+      const answerCard = document.getElementById('answer-card');
+      const answerPre = document.getElementById('answer');
+      const metaDiv = document.getElementById('meta');
+
+      // Helper: show status
+      function setStatus(msg, isError = false) {
+        status.textContent = msg;
+        status.className = isError ? 'status status-error' : 'status';
+      }
+
+      // Clear UI
+      clearBtn.addEventListener('click', () => {
+        questionInput.value = '';
+        answerPre.textContent = '';
+        metaDiv.textContent = '';
+        answerCard.classList.add('hidden');
+        setStatus('');
+      });
+
+      // Ask button
+      askBtn.addEventListener('click', async () => {
+        const question = questionInput.value.trim();
+        if (!question) {
+          setStatus('Please type a question first.', true);
+          questionInput.focus();
+          return;
+        }
+
+        // UI: show loading
+        setStatus('Thinking… (this may take a few seconds)');
+
+        askBtn.disabled = true;
+        clearBtn.disabled = true;
+        answerCard.classList.add('hidden');
+        answerPre.textContent = '';
+
+        try {
+          const resp = await fetch('/ask', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ question: question })
+          });
+
+          if (!resp.ok) {
+            // Try to parse body for structured error
+            const errBody = await resp.json().catch(() => null);
+            const errMsg = errBody && errBody.error ? errBody.error : `HTTP ${resp.status}`;
+            setStatus('Error: ' + errMsg, true);
+            return;
+          }
+
+          const body = await resp.json();
+          if (body.ok) {
+            const answer = body.answer || '(no answer returned)';
+            answerPre.textContent = answer;
+            metaDiv.textContent = body.meta ? `model: ${body.meta.model ?? 'unknown'}` : '';
+            answerCard.classList.remove('hidden');
+            setStatus('Answer received.');
+          } else {
+            setStatus('Error: ' + (body.error || 'Unknown error'), true);
+          }
+
+        } catch (err) {
+          setStatus('Network error: ' + err.message, true);
+        } finally {
+          askBtn.disabled = false;
+          clearBtn.disabled = false;
+        }
+      });
+
+      // Allow Cmd/Ctrl+Enter to submit
+      questionInput.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+          askBtn.click();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

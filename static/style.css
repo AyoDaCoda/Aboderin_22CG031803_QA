@@ -1,0 +1,111 @@
+/* static/style.css - minimal, clean styling */
+:root{
+  --bg: #f6f7fb;
+  --card: #ffffff;
+  --muted: #6b7280;
+  --accent: #2563eb;
+  --danger: #ef4444;
+  --radius: 12px;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+*{box-sizing: border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:linear-gradient(180deg, var(--bg), #eef2ff);
+  color:#0f172a;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:32px;
+}
+
+.container{
+  width:100%;
+  max-width:760px;
+}
+
+.title{
+  text-align:left;
+  margin:0 0 16px 0;
+  font-size:1.6rem;
+  font-weight:600;
+  color:#08122a;
+}
+
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:18px;
+  box-shadow:0 6px 20px rgba(8,16,40,0.06);
+  margin-bottom:16px;
+}
+
+.label{display:block;margin-bottom:8px;color:var(--muted);font-size:0.95rem}
+textarea{
+  width:100%;
+  border:1px solid #e6e9ef;
+  border-radius:8px;
+  padding:12px;
+  font-size:1rem;
+  resize:vertical;
+  min-height:96px;
+  font-family:inherit;
+}
+
+.controls{
+  margin-top:12px;
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+button{
+  background:var(--accent);
+  color:white;
+  border:none;
+  border-radius:10px;
+  padding:10px 14px;
+  cursor:pointer;
+  font-weight:600;
+  font-size:0.95rem;
+}
+
+button.secondary{
+  background:transparent;
+  color:var(--accent);
+  border:1px solid rgba(37,99,235,0.12);
+  font-weight:600;
+}
+
+button:disabled{
+  opacity:0.6;
+  cursor:not-allowed;
+}
+
+.status{margin-top:10px;font-size:0.92rem;color:var(--muted)}
+.status-error{color:var(--danger)}
+
+.answer-card{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:16px;
+  box-shadow:0 6px 20px rgba(8,16,40,0.06);
+}
+
+.hidden{display:none}
+
+.answer-title{margin:0 0 8px 0;font-size:1rem;color:#0f172a}
+.answer-text{
+  white-space:pre-wrap;
+  margin:0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+  background:#f8fafc;
+  border-radius:8px;
+  padding:12px;
+  border:1px solid #eef2ff;
+}
+
+.footer{margin-top:18px;color:var(--muted);font-size:0.9rem}
+.meta{margin-top:8px;color:var(--muted);font-size:0.85rem}

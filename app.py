@@ -92,6 +92,10 @@ def ask():
     except Exception as e:
         return jsonify({"ok": False, "error": "Internal server error", "details": str(e)}), 500
 
+@app.route("/health", methods=["GET"])
+def health():
+    return jsonify({"ok": True, "status": "healthy"})
+
 # -------------------------
 # Run (development)
 # -------------------------
